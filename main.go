@@ -13,18 +13,7 @@ import (
 )
 
 
-func main() {
-	src := flag.String("src", "", "source queue")
-	dest := flag.String("dest", "", "destination queue")
-	awsRegion := flag.String("region", "", "aws region")
-	awsProfile := flag.String("profile", "", "aws profile")
-	messageGroupId := flag.String("messageGroupId", "", "message group id for fifo queues only")
-	flag.Parse()
-
-	if *src == "" || *dest == "" || *awsRegion == "" || *awsProfile == "" {
-		flag.Usage()
-		os.Exit(1)
-	}
+func Move(src string, dest string, awsRegion string, awsProfile string, messageGroupId string) {
 
 	log.Printf("source queue : %v", *src)
 	log.Printf("destination queue : %v", *dest)
