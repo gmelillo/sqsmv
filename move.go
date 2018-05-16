@@ -1,9 +1,7 @@
-package main
+package move
 
 import (
-	"flag"
 	"log"
-	"os"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -15,15 +13,15 @@ import (
 
 func Move(src string, dest string, awsRegion string, awsProfile string, messageGroupId string) {
 
-	log.Printf("source queue : %v", *src)
-	log.Printf("destination queue : %v", *dest)
-	log.Printf("region : %v", *awsRegion)
-	log.Printf("profile : %v", *awsProfile)
-	log.Printf("messageGroupId : %v", *messageGroupId)
+	log.Printf("source queue : %v", src)
+	log.Printf("destination queue : %v", dest)
+	log.Printf("region : %v", awsRegion)
+	log.Printf("profile : %v", awsProfile)
+	log.Printf("messageGroupId : %v", messageGroupId)
 
 	client := sqs.New(session.Must(session.NewSessionWithOptions(session.Options{
-		Config:            aws.Config{Region: awsRegion},
-		Profile:           *awsProfile,
+		Config:            aws.Config{Region: &awsRegion},
+		Profile:           awsProfile,
 		SharedConfigState: session.SharedConfigEnable,
 	})))
 
@@ -32,7 +30,7 @@ func Move(src string, dest string, awsRegion string, awsProfile string, messageG
 	messageAttributeNames := aws.StringSlice([]string{"All"})
 
 	rmin := &sqs.ReceiveMessageInput{
-		QueueUrl:              src,
+		QueueUrl:              &src,
 		MaxNumberOfMessages:   &maxMessages,
 		WaitTimeSeconds:       &waitTime,
 		MessageAttributeNames: messageAttributeNames,
@@ -61,11 +59,11 @@ func Move(src string, dest string, awsRegion string, awsProfile string, messageG
 				defer wg.Done()
 
 				// write the message to the destination queue
-				if *messageGroupId == "" {
+				if messageGroupId == "" {
 					smi := sqs.SendMessageInput{
 						MessageAttributes: 			m.MessageAttributes,
 						MessageBody:       			m.Body,
-						QueueUrl:          			dest,
+						QueueUrl:          			&dest,
 					}
 
 					_, err := client.SendMessage(&smi)
@@ -84,8 +82,8 @@ func Move(src string, dest string, awsRegion string, awsProfile string, messageG
 					smi := sqs.SendMessageInput{
 						MessageAttributes: 			m.MessageAttributes,
 						MessageBody:       			m.Body,
-						QueueUrl:          			dest,
-						MessageGroupId:    			messageGroupId,
+						QueueUrl:          			&dest,
+						MessageGroupId:    			&messageGroupId,
 						MessageDeduplicationId: aws.String(msgDeduplicationId.String()),
 					}
 
@@ -99,7 +97,7 @@ func Move(src string, dest string, awsRegion string, awsProfile string, messageG
 
 				// message was sent, dequeue from source queue
 				dmi := &sqs.DeleteMessageInput{
-					QueueUrl:      src,
+					QueueUrl:      &src,
 					ReceiptHandle: m.ReceiptHandle,
 				}
 
