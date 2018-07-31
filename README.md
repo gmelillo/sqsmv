@@ -19,7 +19,6 @@ If FIFO also include messageGroupId (optional)
 
     sqsmv -src https://region.queue.amazonaws.com/123/queue-a -dest https://region.queue.amazonaws.com/123/queue-b -region eu-west-1 -profile test/prod
 
-
 ## Seeing is believing :)
 
 Create some SQS messages to play with using the AWS CLI.
@@ -31,7 +30,6 @@ Create some SQS messages to play with using the AWS CLI.
             --profile test/prod
             --message-body "{\"id\": $i}"
     done
-
 
 ## License
 

@@ -7,9 +7,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
-
 
 func Move(src string, dest string, awsRegion string, awsProfile string, messageGroupId string) {
 
@@ -61,9 +60,9 @@ func Move(src string, dest string, awsRegion string, awsProfile string, messageG
 				// write the message to the destination queue
 				if messageGroupId == "" {
 					smi := sqs.SendMessageInput{
-						MessageAttributes: 			m.MessageAttributes,
-						MessageBody:       			m.Body,
-						QueueUrl:          			&dest,
+						MessageAttributes: m.MessageAttributes,
+						MessageBody:       m.Body,
+						QueueUrl:          &dest,
 					}
 
 					_, err := client.SendMessage(&smi)
@@ -80,10 +79,10 @@ func Move(src string, dest string, awsRegion string, awsProfile string, messageG
 					}
 
 					smi := sqs.SendMessageInput{
-						MessageAttributes: 			m.MessageAttributes,
-						MessageBody:       			m.Body,
-						QueueUrl:          			&dest,
-						MessageGroupId:    			&messageGroupId,
+						MessageAttributes:      m.MessageAttributes,
+						MessageBody:            m.Body,
+						QueueUrl:               &dest,
+						MessageGroupId:         &messageGroupId,
 						MessageDeduplicationId: aws.String(msgDeduplicationId.String()),
 					}
 
